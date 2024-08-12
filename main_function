@@ -1,0 +1,655 @@
+const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const ffmpeg = require('fluent-ffmpeg');
+const Jimp = require('jimp');
+const { exec } = require('child_process');
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => {
+    console.log('sleep '+milliseconds+' milliseconds');
+    setTimeout(resolve, milliseconds)})
+}
+
+
+async function tts(user,pass,bodytext,id_truyen,sotap,part,sotapghep,charactor){
+
+const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
+
+if (!fs.existsSync(folderPath_sotap)) {
+  try {
+    fs.mkdirSync(folderPath_sotap);
+    console.log('Directory created successfully');
+  } catch (err) {
+    console.error(`Failed to create directory: ${err.message}`);
+  }
+} else {
+  console.log('Directory already exists');
+}
+
+const puppeteer = require('puppeteer-extra')
+// add stealth plugin and use defaults (all evasion techniques)
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+/*
+// require proxy plugin
+const pluginProxy = require('puppeteer-extra-plugin-proxy');
+// add proxy plugin without proxy crendentials
+puppeteer.use(pluginProxy({
+	address: ip,
+	port: port,
+	credentials: {
+		username: user,
+		password: pass,
+		}
+		}));
+
+*/
+		puppeteer.launch({ headless: false,
+		args: ['--start-maximized',
+			  ],
+		//userDataDir: './profile',
+		executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe"
+
+		}).then(async browser => {
+			const page = await browser.newPage()
+			await page.goto('https://ttsopenai.com/signin',{timeout: 0})
+			await sleep(5000+200*Math.random());			
+			// đóng quảng cáo
+			try{
+				ads_selector='[type="button"]'
+				const ads_en = await page.$$(ads_selector);
+				console.log(ads_en.length)
+				await ads_en[5].click()
+
+			}
+			catch
+			{
+				console.log("Không có quảng cáo!")
+			}
+			await sleep(5000+200*Math.random());			
+			try{
+				user_selector='[name="username"]'
+				const user_en = await page.$(user_selector);
+				await user_en.click()
+				await page.keyboard.type(user);
+				await sleep(1000+200*Math.random());
+				pass_selector='[name="password"]'
+				const pass_en = await page.$(pass_selector);
+				await pass_en.click()
+				await page.keyboard.type(pass);	
+				await sleep(1000+200*Math.random());
+				submit_selector='[type="submit"]'
+				const submit_en = await page.$(submit_selector);
+				await submit_en.click()				
+			}
+			catch
+			{
+				console.log ("Đã login")
+			}
+		try{
+			await sleep(5000+200*Math.random());
+			// xóa file đã đọc lần trước
+			await page.goto('https://ttsopenai.com/history',{timeout: 0})
+			await sleep(10000+200*Math.random());			
+			try{
+				// xóa toàn bộ file đã đọc
+				DeleteAll_selector='[class="flex items-center text-sm font-medium text-red-700 md:rounded-full hover:text-red-900 dark:hover:text-red-500 md:mr-0 md:border md:border-gray-200 dark:border-gray-600 px-3 py-2.5 dark:text-red-400 md:shadow-sm"]'
+				const DeleteAll_en = await page.$(DeleteAll_selector);
+				await DeleteAll_en.click()
+				await sleep(5000+200*Math.random());
+				yes_selector='[class="text-white justify-center bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"]'
+				const yes_selector_en = await page.$(yes_selector);
+				await yes_selector_en.click()					
+				await sleep(15000+200*Math.random());
+			}
+			catch
+			{
+				console.log("Đã xóa rồi!")
+			}
+			await page.goto('https://ttsopenai.com',{timeout: 0})
+			await sleep(5000+200*Math.random());	
+			content_selector_en='[id="text-translate-input"]'
+			const content_en = await page.$(content_selector_en);
+			await content_en.click()
+			await page.keyboard.type(bodytext);
+			await sleep(5000+200*Math.random());
+			// Chọn nhân vật đọc
+			person_charactor='[class="rounded-lg divide-y divide-gray-200 dark:divide-gray-800 ring-1 ring-gray-200 dark:ring-gray-800 shadow-sm hover:shadow-lg bg-white dark:bg-gray-900 group"]'
+			const person = await page.$$(person_charactor);
+			console.log("Số nhân vật"+person.length)
+			if(charactor !="default")
+			{
+				await person[charactor].click()
+			}
+			await sleep(3000+200*Math.random());			
+			// Đọc văn bản
+			read_selector_en='[class="focus:outline-none disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 w-20 h-20 md:w-full md:h-full font-medium rounded-full md:rounded-l-none text-base gap-x-2.5 px-3.5 py-2.5 shadow-sm text-white dark:text-gray-900 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500 dark:bg-primary-400 dark:hover:bg-primary-500 dark:disabled:bg-primary-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 dark:focus-visible:outline-primary-400 inline-flex items-center md:justify-between justify-center"]'
+			const read_en = await page.$(read_selector_en);
+			await read_en.click()
+		}
+		catch
+		{
+			try{
+				await sleep(20000+200*Math.random());	
+				content_selector_en='[id="text-translate-input"]'
+				const content_en = await page.$(content_selector_en);
+				await content_en.click()
+				await page.keyboard.type(bodytext);
+				await sleep(5000+200*Math.random());
+				// Chọn nhân vật đọc
+				person_charactor='[class="rounded-lg divide-y divide-gray-200 dark:divide-gray-800 ring-1 ring-gray-200 dark:ring-gray-800 shadow-sm hover:shadow-lg bg-white dark:bg-gray-900 group"]'
+				const person = await page.$$(person_charactor);
+				console.log("Số nhân vật"+person.length)
+				if(charactor !="default")
+				{
+					await person[charactor].click()
+				}
+				await sleep(3000+200*Math.random());
+				// Đọc văn bản
+				read_selector_en='[class="focus:outline-none disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 w-20 h-20 md:w-full md:h-full font-medium rounded-full md:rounded-l-none text-base gap-x-2.5 px-3.5 py-2.5 shadow-sm text-white dark:text-gray-900 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500 dark:bg-primary-400 dark:hover:bg-primary-500 dark:disabled:bg-primary-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 dark:focus-visible:outline-primary-400 inline-flex items-center md:justify-between justify-center"]'
+				const read_en = await page.$(read_selector_en);
+				await read_en.click()
+			}
+			catch
+			{
+				console.log("Chưa import đc text!")
+				await browser.close();
+			}
+		}
+			// Đợi cho tới khi xuất hiện link Downloads
+			selector='[class="flex flex-row items-center gap-2"]'
+			try {
+				// Đợi cho đến khi phần tử xuất hiện
+				await page.waitForSelector(selector, { timeout: 135000 }); // Thời gian chờ tối đa là 30 giây
+				console.log('Phần tử đã xuất hiện!');
+				// Tải file mp3
+				await page.goto('https://ttsopenai.com/history',{timeout: 0})
+				await sleep(20000+200*Math.random());
+				await page.goto('https://ttsopenai.com/history',{timeout: 0})
+				await sleep(20000+200*Math.random());
+				const page_history = await page.content();
+				mp3_link=page_history.split('<source src="')
+				mp3_link=mp3_link[1].split('"')
+				fileUrl=mp3_link[0].replaceAll('&amp;','&')
+				console.log(fileUrl)
+				const outputLocationPath = path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotap+"_"+part+".mp3");
+
+				downloadFile(fileUrl, outputLocationPath)
+				  .then(() => {
+					console.log('Tải tệp thành công!');
+					// ghi file vào Listaudio
+					fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
+					  if (err) throw err;
+					  console.log('Updated!');
+					});
+				  })
+				  .catch(err => {
+					console.error('Lỗi khi tải tệp:', err);
+				  });
+				await sleep(10000+200*Math.random());
+				// xóa toàn bộ file đã đọc
+				
+			  	DeleteAll_selector='[class="flex items-center text-sm font-medium text-red-700 md:rounded-full hover:text-red-900 dark:hover:text-red-500 md:mr-0 md:border md:border-gray-200 dark:border-gray-600 px-3 py-2.5 dark:text-red-400 md:shadow-sm"]'
+				const DeleteAll_en = await page.$(DeleteAll_selector);
+				await DeleteAll_en.click()
+				await sleep(5000+200*Math.random());
+				yes_selector='[class="text-white justify-center bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"]'
+				const yes_selector_en = await page.$(yes_selector);
+				await yes_selector_en.click()					
+				await sleep(15000+200*Math.random());			  
+			  } catch (error) {
+				console.log('Phần tử không xuất hiện trong thời gian chờ:', error);
+				// Kiểm tra trong phần history xem đã có file audio chưa?
+				try{
+					// Tải file mp3
+					await page.goto('https://ttsopenai.com/history',{timeout: 0})
+					await sleep(20000+200*Math.random());
+					await page.goto('https://ttsopenai.com/history',{timeout: 0})
+					await sleep(20000+200*Math.random());					
+					const page_history = await page.content();
+					mp3_link=page_history.split('<source src="')
+					mp3_link=mp3_link[1].split('"')
+					fileUrl=mp3_link[0].replaceAll('&amp;','&')
+					console.log(fileUrl)
+					const outputLocationPath = path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotap+"_"+part+".mp3");
+
+					downloadFile(fileUrl, outputLocationPath)
+					  .then(() => {
+						console.log('Tải tệp thành công!');
+					// ghi file vào Listaudio
+						fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
+						  if (err) throw err;
+						  console.log('Updated!');
+						});						
+					  })
+					  .catch(err => {
+						console.error('Lỗi khi tải tệp:', err);
+					  });
+					await sleep(10000+200*Math.random());
+					// xóa toàn bộ file đã đọc
+					DeleteAll_selector='[class="flex items-center text-sm font-medium text-red-700 md:rounded-full hover:text-red-900 dark:hover:text-red-500 md:mr-0 md:border md:border-gray-200 dark:border-gray-600 px-3 py-2.5 dark:text-red-400 md:shadow-sm"]'
+					const DeleteAll_en = await page.$(DeleteAll_selector);
+					await DeleteAll_en.click()
+					await sleep(5000+200*Math.random());
+					yes_selector='[class="text-white justify-center bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"]'
+					const yes_selector_en = await page.$(yes_selector);
+					await yes_selector_en.click()					
+					await sleep(15000+200*Math.random());					
+				}
+				catch
+				{
+					console.log("Chưa đọc xong!")
+					await browser.close();
+				}
+				
+			  }			
+
+			await sleep(1000+200*Math.random());		  
+		  await browser.close();
+	
+		})
+
+		}
+
+// random number
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+// cắt chuỗi theo số lượng ký tự đặt trước
+function splitStringWithWordBoundaries(str, length) {
+  if (length <= 0) {
+    throw new Error('Độ dài của mỗi đoạn con phải lớn hơn 0');
+  }
+
+  const result = [];
+  let start = 0;
+
+  while (start < str.length) {
+    let end = start + length;
+
+    // Nếu điểm cuối vượt quá độ dài chuỗi, đặt nó thành độ dài chuỗi
+    if (end > str.length) {
+      end = str.length;
+    }
+
+    // Nếu đoạn hiện tại không kết thúc bằng khoảng trắng và đoạn tiếp theo không bắt đầu bằng khoảng trắng,
+    // tìm khoảng trắng gần nhất trước đoạn đó
+    if (end < str.length && str[end] !== ' ') {
+      while (end > start && str[end] !== ' ') {
+        end--;
+      }
+    }
+
+    // Nếu không tìm thấy khoảng trắng, lấy đoạn tối đa
+    if (end === start) {
+      end = start + length;
+      if (end > str.length) {
+        end = str.length;
+      }
+    }
+
+    result.push(str.slice(start, end));
+    start = end;
+
+    // Bỏ qua khoảng trắng
+    while (start < str.length && str[start] === ' ') {
+      start++;
+    }
+  }
+
+  return result;
+}
+
+// download file from url
+async function downloadFile(fileUrl, outputLocationPath) {
+  const writer = fs.createWriteStream(outputLocationPath);
+
+  const response = await axios({
+    url: fileUrl,
+    method: 'GET',
+    responseType: 'stream'
+  });
+
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve);
+    writer.on('error', reject);
+  });
+}
+
+// Ghép nhiều  file audio thành 1
+function mergeAudioFiles(inputDir, outputFile) {
+	
+const ffmpegCommand = 'ffmpeg -f concat -safe 0 -i '+inputDir+'audiolist.txt -c copy '+outputFile;
+
+// Chạy lệnh FFmpeg
+exec(ffmpegCommand, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Lỗi: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    console.error(`Lỗi stderr: ${stderr}`);
+    return;
+  }
+});
+}
+
+// tăng tốc độ file audio
+function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
+  ffmpeg(inputFilePath)
+    .audioFilters(`atempo=${speed}`)
+    .on('start', (cmd) => {
+      console.log('Started:', cmd);
+    })
+    .on('progress', (progress) => {
+      console.log('Processing:', progress);
+    })
+    .on('error', (err) => {
+      console.error('Error:', err);
+    })
+    .on('end', () => {
+      console.log('Finished processing');
+    })
+    .save(outputFilePath);
+}
+
+// Tạo thumbnail cho video
+async function addTextToImage_thumnail(inputImagePath, outputImagePath, text, options) {
+  try {
+    // Load the image
+    const image = await Jimp.read(inputImagePath);
+
+    // Load the font
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
+
+    // Define default options
+    const defaultOptions = {
+      x: 10,
+      y: 10,
+      maxWidth: image.bitmap.width - 20, // Default max width to image width - 20 pixels
+      maxHeight: image.bitmap.height - 20, // Default max height to image height - 20 pixels
+      alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+      alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+    };
+
+    // Merge options with defaults
+    const finalOptions = { ...defaultOptions, ...options };
+
+    // Add the text to the image
+    image.print(
+      font,
+      finalOptions.x,
+      finalOptions.y,
+      {
+        text: text,
+        alignmentX: finalOptions.alignmentX,
+        alignmentY: finalOptions.alignmentY,
+      },
+      finalOptions.maxWidth,
+      finalOptions.maxHeight
+    );
+
+    // Save the image
+    await image.writeAsync(outputImagePath);
+    console.log('Text added to image successfully!');
+  } catch (error) {
+    console.error('Error adding text to image:', error);
+  }
+}
+
+async function addTextToImage(inputImagePath, outputImagePath, text, options) {
+  try {
+    // Load the image
+    const image = await Jimp.read(inputImagePath);
+
+    // Load the font
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
+
+    // Define default options
+    const defaultOptions = {
+      x: 10,
+      y: 10,
+      maxWidth: image.bitmap.width - 20, // Default max width to image width - 20 pixels
+      maxHeight: image.bitmap.height - 20, // Default max height to image height - 20 pixels
+      alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+      alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+    };
+
+    // Merge options with defaults
+    const finalOptions = { ...defaultOptions, ...options };
+
+    // Add the text to the image
+    image.print(
+      font,
+      finalOptions.x,
+      finalOptions.y,
+      {
+        text: text,
+        alignmentX: finalOptions.alignmentX,
+        alignmentY: finalOptions.alignmentY,
+      },
+      finalOptions.maxWidth,
+      finalOptions.maxHeight
+    );
+
+    // Save the image
+    await image.writeAsync(outputImagePath);
+    console.log('Text added to image successfully!');
+  } catch (error) {
+    console.error('Error adding text to image:', error);
+  }
+}
+
+//ffmpeg add text to image
+function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, text, fontSize, fontColor ,x,y) {
+    const ffmpegCommand = `ffmpeg -i "${inputImagePath}" -vf "drawtext=text='${text}':fontfile='${fontPath}':fontcolor=${fontColor}:fontsize=${fontSize}:x=${x}:y=${y}" "${outputImagePath}"`;
+
+    exec(ffmpegCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+            return;
+        }
+        console.log(`Stdout: ${stdout}`);
+        console.log('Image processed successfully!');
+    });
+}
+
+// add watermask to video
+function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVideoPath, options) {
+  const defaultOptions = {
+    x: '(main_w-overlay_w)/2', // Vị trí X của watermark (ở giữa theo chiều ngang)
+    y: '(main_h-overlay_h)/2', // Vị trí Y của watermark (ở giữa theo chiều dọc)
+    startTime: 0, // Thời gian bắt đầu (giây)
+    duration: 0, // Thời gian xuất hiện (giây), 0 nghĩa là xuất hiện suốt video
+  };
+
+  const finalOptions = { ...defaultOptions, ...options };
+
+  const overlayCommand = `overlay=${finalOptions.x}:${finalOptions.y}`;
+
+  ffmpeg(inputVideoPath)
+    .input(watermarkImagePath)
+    .complexFilter([overlayCommand])
+    .output(outputVideoPath)
+    .on('start', (commandLine) => {
+      console.log('Chạy lệnh FFmpeg:', commandLine);
+    })
+    .on('progress', (progress) => {
+      console.log('Tiến trình:', progress.percent + '%');
+    })
+    .on('end', () => {
+      console.log('Thêm watermark vào video thành công!');
+    })
+    .on('error', (err) => {
+      console.error('Lỗi khi chạy FFmpeg:', err.message);
+    })
+    .run();
+}
+
+// Ghép audio and video
+function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFilePath) {
+  // Lệnh ffmpeg để lấy độ dài của audio
+  const getAudioDurationCommand = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${inputAudioPath}`;
+
+  exec(getAudioDurationCommand, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error getting audio duration: ${error.message}`);
+      return;
+    }
+    const audioDuration = parseFloat(stdout.trim());
+
+    // Lệnh ffmpeg để lấy độ dài của video
+    const getVideoDurationCommand = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${inputVideoPath}`;
+
+    exec(getVideoDurationCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error getting video duration: ${error.message}`);
+        return;
+      }
+      const videoDuration = parseFloat(stdout.trim());
+
+      // Tính số lần lặp lại cần thiết
+      const loopCount = Math.ceil(audioDuration / videoDuration);
+
+      // Lệnh ffmpeg để ghép audio vào video và lặp lại video
+      const ffmpegCommand = `ffmpeg -stream_loop ${loopCount - 1} -i ${inputVideoPath} -i ${inputAudioPath} -map 0:v:0 -map 1:a:0 -shortest -c copy ${outputFilePath}`;
+
+      exec(ffmpegCommand, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.log('Finished processing');
+      });
+    });
+  });
+}
+
+// ghep 2 video
+async function mergeVideos(video1, video2, output, tempDir, title, channel,discription,year) {
+  const tempVideo1 = tempDir+'temp1.ts';
+  const tempVideo2 = tempDir+'temp2.ts';
+
+  // Tạo thư mục tạm thời nếu chưa tồn tại
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
+
+  const convertVideo = (input, output) => {
+    return new Promise((resolve, reject) => {
+      ffmpeg(input)
+        .output(output)
+        .videoCodec('libx264')
+        .size('1280x720') // Chuẩn hóa về độ phân giải 720p, bạn có thể điều chỉnh độ phân giải này
+		.outputOptions([
+				  `-metadata title=${title}`,
+				  `-metadata author=${channel}`,
+				  `-metadata comment=${description}`,
+				  `-metadata year=${year}`
+				])
+        .on('end', () => {
+          resolve();
+        })
+        .on('error', (err) => {
+          reject(err);
+        })
+        .run();
+    });
+  };
+
+  const concatenateVideos = (inputList, output) => {
+    return new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(inputList)
+        .inputOptions(['-f concat', '-safe 0'])
+        .outputOptions('-c copy')
+		.outputOptions([
+				  `-metadata title=${title}`,
+				  `-metadata author=${channel}`,
+				  `-metadata comment=${description}`,
+				  `-metadata year=${year}`
+				])
+        .output(output)
+        .on('end', () => {
+          resolve();
+        })
+        .on('error', (err) => {
+          reject(err);
+        })
+        .run();
+    });
+  };
+
+  try {
+    // Chuyển đổi cả hai video về định dạng và độ phân giải chung
+    await convertVideo(video1, tempVideo1);
+    await convertVideo(video2, tempVideo2);
+
+    // Tạo file danh sách tạm thời
+    const fileList = tempDir+'filelist.txt';
+    fs.writeFileSync(fileList, `file '${tempVideo1}'\nfile '${tempVideo2}'`);
+	await sleep(5000+200*Math.random());
+    // Ghép các video
+    await concatenateVideos(fileList, output);
+	await sleep(5000+200*Math.random());
+    console.log('Videos have been merged successfully');
+
+    // Xóa các file tạm thời
+    fs.unlinkSync(tempVideo1);
+    fs.unlinkSync(tempVideo2);
+    fs.unlinkSync(fileList);
+  } catch (error) {
+    console.error('Error processing videos:', error.message);
+  }
+}
+
+// xóa toàn bộ file trong thư mục
+function removeAllFilesSync(directory) {
+        const files = fs.readdirSync(directory);
+        
+        for (const file of files) {
+            const filePath = path.join(directory, file);
+            fs.unlinkSync(filePath);
+        }
+    }
+
+// Lấy random dòng trong file
+function getRandomLine(filename){
+   var data = fs.readFileSync(filename, "utf8");
+   var lines = data.split('\n');
+   return lines[Math.floor(Math.random()*lines.length)];
+}
+
+
+// Export the functions
+module.exports = {
+    tts,
+    getRandomInt,
+	splitStringWithWordBoundaries,
+	downloadFile,
+	mergeAudioFiles,
+	increaseAudioSpeed,
+	addTextToImage_thumnail,
+	addTextToImage,
+	ffmpeg_addTextToImage,
+	addWatermarkToVideo,
+	repeatVideoAndAddAudio,
+	mergeVideos,
+	removeAllFilesSync,
+	getRandomLine
+
+};
