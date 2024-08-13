@@ -112,8 +112,29 @@ puppeteer.use(pluginProxy({
 			await sleep(5000+200*Math.random());	
 			content_selector_en='[id="text-translate-input"]'
 			const content_en = await page.$(content_selector_en);
+			// nhap test 1 ky tu
 			await content_en.click()
-			await page.keyboard.type(bodytext);
+			await page.keyboard.type(" ");
+			await sleep(10000+200*Math.random());
+			// Kiểm tra số ký tự
+		    so_charactor='[class="absolute bottom-[10px] right-3 text-right text-xs font-thin dark:text-gray-300 flex flex-row space-x-4 items-center"]'
+			const text = await page.$eval(so_charactor, el => el.textContent.trim());
+			tongsokytuchophep = text.split('/')
+			tongsokytu_duocphep=parseInt(tongsokytuchophep[1],10);
+			if(tongsokytu_duocphep > 2999)
+			{
+				const content_en = await page.$(content_selector_en);
+				await content_en.click()
+				await page.keyboard.press('Backspace');
+				await sleep(1000+200*Math.random());
+				await page.keyboard.type(bodytext);
+				await sleep(2000+200*Math.random());				
+			}
+			else
+			{
+				console.log("Chưa import đc text!")
+				await browser.close();
+			}
 			await sleep(5000+200*Math.random());
 			// Chọn nhân vật đọc
 			person_charactor='[class="rounded-lg divide-y divide-gray-200 dark:divide-gray-800 ring-1 ring-gray-200 dark:ring-gray-800 shadow-sm hover:shadow-lg bg-white dark:bg-gray-900 group"]'
@@ -135,8 +156,29 @@ puppeteer.use(pluginProxy({
 				await sleep(20000+200*Math.random());	
 				content_selector_en='[id="text-translate-input"]'
 				const content_en = await page.$(content_selector_en);
+			// nhap test 1 ky tu
+			await content_en.click()
+			await page.keyboard.type(" ");
+			await sleep(10000+200*Math.random());
+			// Kiểm tra số ký tự
+		    so_charactor='[class="absolute bottom-[10px] right-3 text-right text-xs font-thin dark:text-gray-300 flex flex-row space-x-4 items-center"]'
+			const text = await page.$eval(so_charactor, el => el.textContent.trim());
+			tongsokytuchophep = text.split('/')
+			tongsokytu_duocphep=parseInt(tongsokytuchophep[1],10);
+			if(tongsokytu_duocphep > 2999)
+			{
+				const content_en = await page.$(content_selector_en);
 				await content_en.click()
+				await page.keyboard.press('Backspace');
+				await sleep(1000+200*Math.random());
 				await page.keyboard.type(bodytext);
+				await sleep(2000+200*Math.random());				
+			}
+			else
+			{
+				console.log("Chưa import đc text!")
+				await browser.close();
+			}
 				await sleep(5000+200*Math.random());
 				// Chọn nhân vật đọc
 				person_charactor='[class="rounded-lg divide-y divide-gray-200 dark:divide-gray-800 ring-1 ring-gray-200 dark:ring-gray-800 shadow-sm hover:shadow-lg bg-white dark:bg-gray-900 group"]'
