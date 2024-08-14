@@ -851,7 +851,7 @@ dem_tg=1
 				const input_speed_audio = path.join(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotapghep+'.mp3'); // Đường dẫn tới tệp audio đầu vào
 				const output_speed_audio = path.join(__dirname+"/audio/", id_truyen+"_"+sotapghep+'.mp3'); // Đường dẫn tới tệp đầu ra
 				const speed = 1.2; // Tăng tốc độ phát gấp đôi
-				mrcuong.increaseAudioSpeed(input_speed_audio, output_speed_audio, speed);
+				//mrcuong.increaseAudioSpeed(input_speed_audio, output_speed_audio, speed);
 
 
 	// Tạo thumbnail cho video
@@ -913,7 +913,7 @@ dem_tg=1
 				await sleep(20000+200*Math.random());
 				console.log("Ghep video and audio-------------------------------------------------")			
 				outputFilePath_video = "./temp/"+id_truyen+"_"+sotapghep+"/"+id_truyen+"_"+sotapghep+".mp4"
-				input_audio_merge= "./audio/"+id_truyen+"_"+sotapghep+'.mp3'
+				input_audio_merge= path.join(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotapghep+'.mp3');
 				input_video_merge= "./temp/"+id_truyen+"_"+sotapghep+"/"+id_truyen+"_"+sotapghep+'_out.mp4'
 				await mrcuong.repeatVideoAndAddAudio(input_video_merge, input_audio_merge, outputFilePath_video)			
 				await sleep(20000+200*Math.random());	
