@@ -115,7 +115,7 @@ puppeteer.use(pluginProxy({
 			// nhap test 1 ky tu
 			await content_en.click()
 			await page.keyboard.type(" ");
-			await sleep(10000+200*Math.random());
+			await sleep(5000+200*Math.random());
 			// Kiểm tra số ký tự
 		    so_charactor='[class="absolute bottom-[10px] right-3 text-right text-xs font-thin dark:text-gray-300 flex flex-row space-x-4 items-center"]'
 			const text = await page.$eval(so_charactor, el => el.textContent.trim());
@@ -135,7 +135,7 @@ puppeteer.use(pluginProxy({
 				console.log("Chưa import đc text!")
 				await browser.close();
 			}
-			await sleep(5000+200*Math.random());
+			await sleep(3000+200*Math.random());
 			// Chọn nhân vật đọc
 			person_charactor='[class="rounded-lg divide-y divide-gray-200 dark:divide-gray-800 ring-1 ring-gray-200 dark:ring-gray-800 shadow-sm hover:shadow-lg bg-white dark:bg-gray-900 group"]'
 			const person = await page.$$(person_charactor);
@@ -147,18 +147,14 @@ puppeteer.use(pluginProxy({
 			await sleep(3000+200*Math.random());			
 			// chọn tốc độ đọc
 			try{
-				speed_audio='[id="idGSyC2Ggl_37"]'
-				const speed = await page.$(speed_audio)
-				await speed.click()
-				await sleep(1000+200*Math.random());
-				await page.keyboard.type(".2");
+				await page.type('input[class="relative block disabled:cursor-not-allowed disabled:opacity-75 focus:outline-none border-0 form-input rounded-full xl w-14 placeholder-gray-400 dark:placeholder-gray-500 text-xs px-2 py-1 shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"]','.2',{delay: 100+10*Math.random()})
 			}
 			catch
 			{
 				console.log ("Chọn tốc độ mặc định")
 			}
 			
-			await sleep(3000+200*Math.random());
+			await sleep(1000+200*Math.random());
 			// Đọc văn bản
 			read_selector_en='[class="focus:outline-none disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 w-20 h-20 md:w-full md:h-full font-medium rounded-full md:rounded-l-none text-base gap-x-2.5 px-3.5 py-2.5 shadow-sm text-white dark:text-gray-900 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500 dark:bg-primary-400 dark:hover:bg-primary-500 dark:disabled:bg-primary-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 dark:focus-visible:outline-primary-400 inline-flex items-center md:justify-between justify-center"]'
 			const read_en = await page.$(read_selector_en);
@@ -238,7 +234,7 @@ puppeteer.use(pluginProxy({
 				await page.goto('https://ttsopenai.com/history',{timeout: 0})
 				await sleep(20000+200*Math.random());
 				await page.goto('https://ttsopenai.com/history',{timeout: 0})
-				await sleep(20000+200*Math.random());
+				await sleep(10000+200*Math.random());
 				const page_history = await page.content();
 				mp3_link=page_history.split('<source src="')
 				mp3_link=mp3_link[1].split('"')
@@ -277,7 +273,7 @@ puppeteer.use(pluginProxy({
 					await page.goto('https://ttsopenai.com/history',{timeout: 0})
 					await sleep(20000+200*Math.random());
 					await page.goto('https://ttsopenai.com/history',{timeout: 0})
-					await sleep(20000+200*Math.random());					
+					await sleep(10000+200*Math.random());					
 					const page_history = await page.content();
 					mp3_link=page_history.split('<source src="')
 					mp3_link=mp3_link[1].split('"')
