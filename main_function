@@ -46,7 +46,7 @@ puppeteer.use(pluginProxy({
 		}));
 
 */
-		puppeteer.launch({ headless: "new",
+		puppeteer.launch({ headless: true,
 		args: ['--start-maximized',
 			  ],
 		//userDataDir: './profile',
@@ -625,7 +625,8 @@ async function mergeVideos(video1, video2, output, tempDir, title, channel,discr
 				  `-metadata title=${title}`,
 				  `-metadata author=${channel}`,
 				  `-metadata comment=${description}`,
-				  `-metadata year=${year}`
+				  `-metadata year=${year}`,
+				  `-preset ultrafast` // Dùng preset nhanh nhất
 				])
         .on('end', () => {
           resolve();
