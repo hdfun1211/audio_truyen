@@ -68,6 +68,7 @@ puppeteer.use(pluginProxy({
 			{
 				console.log("Không có quảng cáo!")
 			}
+			await page.goto('https://ttsopenai.com/signin',{timeout: 0})
 			await sleep(5000+200*Math.random());			
 			try{
 				user_selector='[name="username"]'
@@ -89,7 +90,7 @@ puppeteer.use(pluginProxy({
 				console.log ("Đã login")
 			}
 		try{
-			await sleep(15000+200*Math.random());
+			await sleep(25000+200*Math.random());
 			// xóa file đã đọc lần trước
 			await page.goto('https://ttsopenai.com/history',{timeout: 0})
 			await sleep(7000+200*Math.random());			
@@ -110,6 +111,8 @@ puppeteer.use(pluginProxy({
 			}
 			await page.goto('https://ttsopenai.com',{timeout: 0})
 			await sleep(5000+200*Math.random());	
+			await page.goto('https://ttsopenai.com',{timeout: 0})
+			await sleep(5000+200*Math.random());
 			content_selector_en='[id="text-translate-input"]'
 			const content_en = await page.$(content_selector_en);
 			// nhap test 1 ky tu
