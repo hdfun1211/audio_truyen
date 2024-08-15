@@ -46,7 +46,7 @@ puppeteer.use(pluginProxy({
 		}));
 
 */
-		puppeteer.launch({ headless: 'new',
+		puppeteer.launch({ headless: "new",
 		args: ['--start-maximized',
 			  ],
 		//userDataDir: './profile',
@@ -89,10 +89,10 @@ puppeteer.use(pluginProxy({
 				console.log ("Đã login")
 			}
 		try{
-			await sleep(5000+200*Math.random());
+			await sleep(15000+200*Math.random());
 			// xóa file đã đọc lần trước
 			await page.goto('https://ttsopenai.com/history',{timeout: 0})
-			await sleep(10000+200*Math.random());			
+			await sleep(7000+200*Math.random());			
 			try{
 				// xóa toàn bộ file đã đọc
 				DeleteAll_selector='[class="flex items-center text-sm font-medium text-red-700 md:rounded-full hover:text-red-900 dark:hover:text-red-500 md:mr-0 md:border md:border-gray-200 dark:border-gray-600 px-3 py-2.5 dark:text-red-400 md:shadow-sm"]'
