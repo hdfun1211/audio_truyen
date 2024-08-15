@@ -46,7 +46,7 @@ puppeteer.use(pluginProxy({
 		}));
 
 */
-		puppeteer.launch({ headless: "new",
+		puppeteer.launch({ headless: 'new',
 		args: ['--start-maximized',
 			  ],
 		//userDataDir: './profile',
