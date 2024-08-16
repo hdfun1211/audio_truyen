@@ -515,7 +515,7 @@ async function addTextToImage(inputImagePath, outputImagePath, text, options) {
 }
 
 //ffmpeg add text to image
-function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, text, fontSize, fontColor ,x,y) {
+async function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, text, fontSize, fontColor ,x,y) {
     const ffmpegCommand = `ffmpeg -i "${inputImagePath}" -vf "drawtext=text='${text}':fontfile='${fontPath}':fontcolor=${fontColor}:fontsize=${fontSize}:x=${x}:y=${y}" "${outputImagePath}"`;
 
     exec(ffmpegCommand, (error, stdout, stderr) => {
@@ -533,7 +533,7 @@ function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, text, 
 }
 
 // add watermask to video
-function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVideoPath, options) {
+async function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVideoPath, options) {
   const defaultOptions = {
     x: '(main_w-overlay_w)/2', // Vị trí X của watermark (ở giữa theo chiều ngang)
     y: '(main_h-overlay_h)/2', // Vị trí Y của watermark (ở giữa theo chiều dọc)
@@ -565,7 +565,7 @@ function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVideoPath
 }
 
 // Ghép audio and video
-function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFilePath) {
+async function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFilePath) {
   // Lệnh ffmpeg để lấy độ dài của audio
   const getAudioDurationCommand = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${inputAudioPath}`;
 
@@ -651,7 +651,8 @@ async function mergeVideos(video1, video2, output, tempDir, title, channel,discr
 				  `-metadata title=${title}`,
 				  `-metadata author=${channel}`,
 				  `-metadata comment=${description}`,
-				  `-metadata year=${year}`
+				  `-metadata year=${year}`,
+				  `-preset ultrafast` // Dùng preset nhanh nhất
 				])
         .output(output)
         .on('end', () => {
@@ -688,7 +689,7 @@ async function mergeVideos(video1, video2, output, tempDir, title, channel,discr
 }
 
 // xóa toàn bộ file trong thư mục
-function removeAllFilesSync(directory) {
+async function removeAllFilesSync(directory) {
         const files = fs.readdirSync(directory);
         
         for (const file of files) {
