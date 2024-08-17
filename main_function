@@ -5,6 +5,7 @@ const axios = require('axios');
 const ffmpeg = require('fluent-ffmpeg');
 const Jimp = require('jimp');
 const { exec } = require('child_process');
+const https = require('https');
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => {
@@ -250,7 +251,7 @@ puppeteer.use(pluginProxy({
 					console.log('Tải tệp thành công!');
 					// Kiểm tra sự tồn tại của tên file trong audiolist
 						filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
-						const data_audiolist = await fs.readFile(filePath_audiolist, 'utf8');
+						const data_audiolist = fs.readFile(filePath_audiolist, 'utf8');
  						// Kiểm tra sự tồn tại của chuỗi
 						searchString = outputLocationPath
 						if (data_audiolist.includes(searchString)) {
@@ -262,11 +263,12 @@ puppeteer.use(pluginProxy({
 						  if (err) throw err;
 						  console.log('Updated!');
 						});						
-					  })
+					  }
+				  })
 					  .catch(err => {
 						console.error('Lỗi khi tải tệp:', err);
 					  });						
-						}
+						
 				await sleep(10000+200*Math.random());
 				// xóa toàn bộ file đã đọc
 				
@@ -299,7 +301,7 @@ puppeteer.use(pluginProxy({
 						console.log('Tải tệp thành công!');
 						// Kiểm tra sự tồn tại của tên file trong audiolist
 						filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
-						const data_audiolist = await fs.readFile(filePath_audiolist, 'utf8');
+						const data_audiolist = fs.readFile(filePath_audiolist, 'utf8');
  						// Kiểm tra sự tồn tại của chuỗi
 						searchString = outputLocationPath
 						if (data_audiolist.includes(searchString)) {
@@ -311,11 +313,12 @@ puppeteer.use(pluginProxy({
 						  if (err) throw err;
 						  console.log('Updated!');
 						});						
+					  }
 					  })
 					  .catch(err => {
 						console.error('Lỗi khi tải tệp:', err);
 					  });						
-						}
+						
 					await sleep(10000+200*Math.random());
 					// xóa toàn bộ file đã đọc
 					DeleteAll_selector='[class="flex items-center text-sm font-medium text-red-700 md:rounded-full hover:text-red-900 dark:hover:text-red-500 md:mr-0 md:border md:border-gray-200 dark:border-gray-600 px-3 py-2.5 dark:text-red-400 md:shadow-sm"]'
