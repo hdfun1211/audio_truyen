@@ -719,11 +719,39 @@ async function removeAllFilesSync(directory) {
     }
 
 // Lấy random dòng trong file
-function getRandomLine(filename){
+async function getRandomLine(filename){
    var data = fs.readFileSync(filename, "utf8");
    var lines = data.split('\n');
    return lines[Math.floor(Math.random()*lines.length)];
 }
+
+// Auto Update mainfunction
+// Define the URL of the file you want to download
+
+
+// Function to download the file
+async function downloadFile_update(fileUrl_update, dest) {
+    const file = fs.createWriteStream(dest);
+
+    https.get(fileUrl_update, (response) => {
+        if (response.statusCode !== 200) {
+            console.error(`Failed to get '${url}' (${response.statusCode})`);
+            return;
+        }
+
+        response.pipe(file);
+
+        file.on('finish', () => {
+            file.close(() => {
+                console.log('File downloaded and saved as:', dest);
+            });
+        });
+    }).on('error', (err) => {
+        fs.unlink(dest, () => {}); // Delete the file async if an error occurs
+        console.error('Error occurred while downloading the file:', err.message);
+    });
+}
+
 
 // Export the functions
 module.exports = {
@@ -740,6 +768,7 @@ module.exports = {
 	repeatVideoAndAddAudio,
 	mergeVideos,
 	removeAllFilesSync,
-	getRandomLine
+	getRandomLine,
+	downloadFile_update
 
 };
