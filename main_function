@@ -248,15 +248,25 @@ puppeteer.use(pluginProxy({
 				downloadFile(fileUrl, outputLocationPath)
 				  .then(() => {
 					console.log('Tải tệp thành công!');
-					// ghi file vào Listaudio
-					fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
-					  if (err) throw err;
-					  console.log('Updated!');
-					});
-				  })
-				  .catch(err => {
-					console.error('Lỗi khi tải tệp:', err);
-				  });
+					// Kiểm tra sự tồn tại của tên file trong audiolist
+						filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
+						const data_audiolist = await fs.readFile(filePath_audiolist, 'utf8');
+ 						// Kiểm tra sự tồn tại của chuỗi
+						searchString = outputLocationPath
+						if (data_audiolist.includes(searchString)) {
+						  console.log(`Chuỗi "${searchString}" đã có trong file.`);
+						} else {
+						  console.log(`Chuỗi "${searchString}" không có trong file.`);
+						// ghi file vào Listaudio
+						fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
+						  if (err) throw err;
+						  console.log('Updated!');
+						});						
+					  })
+					  .catch(err => {
+						console.error('Lỗi khi tải tệp:', err);
+					  });						
+						}
 				await sleep(10000+200*Math.random());
 				// xóa toàn bộ file đã đọc
 				
@@ -287,7 +297,16 @@ puppeteer.use(pluginProxy({
 					downloadFile(fileUrl, outputLocationPath)
 					  .then(() => {
 						console.log('Tải tệp thành công!');
-					// ghi file vào Listaudio
+						// Kiểm tra sự tồn tại của tên file trong audiolist
+						filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
+						const data_audiolist = await fs.readFile(filePath_audiolist, 'utf8');
+ 						// Kiểm tra sự tồn tại của chuỗi
+						searchString = outputLocationPath
+						if (data_audiolist.includes(searchString)) {
+						  console.log(`Chuỗi "${searchString}" đã có trong file.`);
+						} else {
+						  console.log(`Chuỗi "${searchString}" không có trong file.`);
+						// ghi file vào Listaudio
 						fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
 						  if (err) throw err;
 						  console.log('Updated!');
@@ -295,7 +314,8 @@ puppeteer.use(pluginProxy({
 					  })
 					  .catch(err => {
 						console.error('Lỗi khi tải tệp:', err);
-					  });
+					  });						
+						}
 					await sleep(10000+200*Math.random());
 					// xóa toàn bộ file đã đọc
 					DeleteAll_selector='[class="flex items-center text-sm font-medium text-red-700 md:rounded-full hover:text-red-900 dark:hover:text-red-500 md:mr-0 md:border md:border-gray-200 dark:border-gray-600 px-3 py-2.5 dark:text-red-400 md:shadow-sm"]'
