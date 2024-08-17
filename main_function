@@ -251,7 +251,7 @@ puppeteer.use(pluginProxy({
 					console.log('Tải tệp thành công!');
 					// Kiểm tra sự tồn tại của tên file trong audiolist
 						filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
-						const data_audiolist = fs.readFile(filePath_audiolist, 'utf8');
+						const data_audiolist = fs.readFileSync(filePath_audiolist, 'utf8');
  						// Kiểm tra sự tồn tại của chuỗi
 						searchString = outputLocationPath
 						if (data_audiolist.includes(searchString)) {
@@ -301,7 +301,7 @@ puppeteer.use(pluginProxy({
 						console.log('Tải tệp thành công!');
 						// Kiểm tra sự tồn tại của tên file trong audiolist
 						filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
-						const data_audiolist = fs.readFile(filePath_audiolist, 'utf8');
+						const data_audiolist = fs.readFileSync(filePath_audiolist, 'utf8');
  						// Kiểm tra sự tồn tại của chuỗi
 						searchString = outputLocationPath
 						if (data_audiolist.includes(searchString)) {
