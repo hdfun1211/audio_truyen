@@ -457,7 +457,7 @@ async function addTextToImage_thumnail(inputImagePath, outputImagePath, text, op
     const image = await Jimp.read(inputImagePath);
 
     // Load the font
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
 
     // Define default options
     const defaultOptions = {
