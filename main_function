@@ -1,3 +1,4 @@
+const gTTS = require('gtts');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
@@ -13,6 +14,49 @@ const sleep = (milliseconds) => {
     setTimeout(resolve, milliseconds)})
 }
 
+// Google Text to speech
+async function google_tts(bodytext,id_truyen,sotap,part,sotapghep)
+{
+const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
+const outputLocationPath = path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotap+"_"+part+".mp3");
+if (!fs.existsSync(folderPath_sotap)) {
+  try {
+    fs.mkdirSync(folderPath_sotap);
+    console.log('Directory created successfully');
+  } catch (err) {
+    console.error(`Failed to create directory: ${err.message}`);
+  }
+} else {
+  console.log('Directory already exists');
+}
+
+
+let speech = bodytext;
+const gtts = new gTTS(speech, 'vi');
+
+gtts.save(outputLocationPath, function (err, result){
+	if(err) { throw new Error(err); }
+	else{
+	// Kiểm tra sự tồn tại của tên file trong audiolist
+		filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
+		const data_audiolist = fs.readFileSync(filePath_audiolist, 'utf8');
+		// Kiểm tra sự tồn tại của chuỗi
+		searchString = outputLocationPath
+		if (data_audiolist.includes(searchString)) {
+		  console.log(`Chuỗi "${searchString}" đã có trong file.`);
+		} else {
+		  console.log(`Chuỗi "${searchString}" không có trong file.`);
+		// ghi file vào Listaudio
+		fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
+		  if (err) throw err;
+		  console.log('Updated!');
+		});						
+	  }		
+	console.log("Text to speech converted!");
+	}
+
+});
+}
 
 async function tts(user,pass,bodytext,id_truyen,sotap,part,sotapghep,charactor){
 
@@ -414,7 +458,7 @@ async function downloadFile(fileUrl, outputLocationPath) {
 }
 
 // Ghép nhiều  file audio thành 1
-function mergeAudioFiles(inputDir, outputFile) {
+async function mergeAudioFiles(inputDir, outputFile) {
 	
 const ffmpegCommand = 'ffmpeg -f concat -safe 0 -i '+inputDir+'audiolist.txt -c copy '+outputFile;
 
@@ -432,9 +476,30 @@ exec(ffmpegCommand, (error, stdout, stderr) => {
 }
 
 // tăng tốc độ file audio
-function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
+//ffmpeg -i that-tich-khong-mua_1_0.mp3 -filter_complex "[0:a]atempo=1.4,asetrate=44100*0.6,aresample=44100,bass=g=30,treble=g=10,volume=2.5,highpass=f=100" output.mp3
+//ffmpeg -i that-tich-khong-mua_1_0.mp3 -filter_complex "atempo=1.4,asetrate=44100*0.58,loudnorm=I=-16:LRA=11:TP=-1.5,equalizer=f=100:t=h:width_type=h:width=200:g=5,equalizer=f=3000:t=h:width_type=h:width=2000:g=3,highpass=f=60,lowpass=f=15000,compand=attacks=0:points=-90/-900|-70/-70|-60/-40|-20/-20|0/0" -ar 44100 -ac 2 -b:a 192k output.mp3
+
+async function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
   ffmpeg(inputFilePath)
-    .audioFilters(`atempo=${speed}`)
+    .audioFilters([
+    'atempo=1.35',                          // Tăng tốc độ phát lên 1.4 lần
+    'asetrate=44100*0.57',                  // Điều chỉnh tốc độ của tần số mẫu
+    'aresample=44100',                     // Đặt lại tần số mẫu về 44100 Hz
+    'bass=g=45',                           // Tăng độ trầm (bass) lên 30 dB
+    'treble=g=10',                         // Tăng độ bổng (treble) lên 10 dB
+    'volume=2.0',                          // Tăng âm lượng lên 2.5 lần
+    'highpass=f=250',                       // Tăng độ trong bằng cách lọc tần số thấp (highpass filter)
+	'loudnorm=I=-16:LRA=11:TP=-1.5',
+	'equalizer=f=100:t=h:width_type=h:width=200:g=5',
+	'equalizer=f=3000:t=h:width_type=h:width=2000:g=3',
+	'highpass=f=60',
+	'lowpass=f=15000',
+	'compand=attacks=0:points=-90/-900|-70/-70|-60/-40|-20/-20|0/0'
+  ])
+	.audioCodec('libmp3lame')     // Sử dụng codec MP3
+	.audioBitrate('192k')         // Đặt bitrate âm thanh
+	.audioFrequency(44100)        // Đặt tần số mẫu
+	.audioChannels(2)             // Đặt số kênh âm thanh
     .on('start', (cmd) => {
       console.log('Started:', cmd);
     })
@@ -613,7 +678,7 @@ async function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFile
       const loopCount = Math.ceil(audioDuration / videoDuration);
 
       // Lệnh ffmpeg để ghép audio vào video và lặp lại video
-      const ffmpegCommand = `ffmpeg -stream_loop ${loopCount - 1} -i ${inputVideoPath} -i ${inputAudioPath} -map 0:v:0 -map 1:a:0 -shortest -c copy ${outputFilePath}`;
+      const ffmpegCommand = `ffmpeg -stream_loop ${loopCount - 1} -i ${inputVideoPath} -i ${inputAudioPath} -map 0:v:0 -map 1:a:0 -shortest -c copy -preset fast -tune zerolatency -b:v 5M ${outputFilePath}`;
 
       exec(ffmpegCommand, (error, stdout, stderr) => {
         if (error) {
@@ -652,6 +717,7 @@ async function mergeVideos(video1, video2, output, tempDir, title, channel,discr
 				  `-metadata author=${channel}`,
 				  `-metadata comment=${description}`,
 				  `-metadata year=${year}`,
+				  `-threads 4`,
 				  `-preset ultrafast` // Dùng preset nhanh nhất
 				])
         .on('end', () => {
@@ -675,6 +741,7 @@ async function mergeVideos(video1, video2, output, tempDir, title, channel,discr
 				  `-metadata author=${channel}`,
 				  `-metadata comment=${description}`,
 				  `-metadata year=${year}`,
+				  `-threads 4`,
 				  `-preset ultrafast` // Dùng preset nhanh nhất
 				])
         .output(output)
@@ -772,6 +839,7 @@ module.exports = {
 	mergeVideos,
 	removeAllFilesSync,
 	getRandomLine,
-	downloadFile_update
+	downloadFile_update,
+	google_tts
 
 };
