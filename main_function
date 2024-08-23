@@ -516,13 +516,13 @@ async function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
 }
 
 // Tạo thumbnail cho video
-async function addTextToImage_thumnail(inputImagePath, outputImagePath, text, options) {
+async function addTextToImage_thumnail(inputImagePath, outputImagePath, text, options, fontstyle) {
   try {
     // Load the image
     const image = await Jimp.read(inputImagePath);
 
     // Load the font
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
+    const font = await Jimp.loadFont(fontstyle);
 
     // Define default options
     const defaultOptions = {
