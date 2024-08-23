@@ -15,7 +15,7 @@ const sleep = (milliseconds) => {
 }
 
 // Google Text to speech
-async function google_tts(bodytext,id_truyen,sotap,part,sotapghep)
+function google_tts(bodytext,id_truyen,sotap,part,sotapghep)
 {
 const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
 const outputLocationPath = path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotap+"_"+part+".mp3");
@@ -56,9 +56,18 @@ gtts.save(outputLocationPath, function (err, result){
 	}
 
 });
+
+return new Promise((resolve, reject) => {
+	console.log("Đang chạy đọc văn bản");
+	setTimeout(() => {
+		console.log("Hàm đầu tiên hoàn thành!");
+		resolve();
+	}, 1000);
+});
+
 }
 
-async function tts(user,pass,bodytext,id_truyen,sotap,part,sotapghep,charactor){
+function tts(user,pass,bodytext,id_truyen,sotap,part,sotapghep,charactor){
 
 const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
 
@@ -435,8 +444,8 @@ function splitStringWithWordBoundaries(str, length) {
       start++;
     }
   }
-
   return result;
+
 }
 
 // download file from url
@@ -455,10 +464,11 @@ async function downloadFile(fileUrl, outputLocationPath) {
     writer.on('finish', resolve);
     writer.on('error', reject);
   });
+
 }
 
 // Ghép nhiều  file audio thành 1
-async function mergeAudioFiles(inputDir, outputFile) {
+function mergeAudioFiles(inputDir, outputFile) {
 	
 const ffmpegCommand = 'ffmpeg -f concat -safe 0 -i '+inputDir+'audiolist.txt -c copy '+outputFile;
 
@@ -473,13 +483,22 @@ exec(ffmpegCommand, (error, stdout, stderr) => {
     return;
   }
 });
+
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy hàm ghép Audio...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
 }
 
 // tăng tốc độ file audio
 //ffmpeg -i that-tich-khong-mua_1_0.mp3 -filter_complex "[0:a]atempo=1.4,asetrate=44100*0.6,aresample=44100,bass=g=30,treble=g=10,volume=2.5,highpass=f=100" output.mp3
 //ffmpeg -i that-tich-khong-mua_1_0.mp3 -filter_complex "atempo=1.4,asetrate=44100*0.58,loudnorm=I=-16:LRA=11:TP=-1.5,equalizer=f=100:t=h:width_type=h:width=200:g=5,equalizer=f=3000:t=h:width_type=h:width=2000:g=3,highpass=f=60,lowpass=f=15000,compand=attacks=0:points=-90/-900|-70/-70|-60/-40|-20/-20|0/0" -ar 44100 -ac 2 -b:a 192k output.mp3
 
-async function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
+function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
   ffmpeg(inputFilePath)
     .audioFilters([
     'atempo=1.35',                          // Tăng tốc độ phát lên 1.4 lần
@@ -513,6 +532,15 @@ async function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
       console.log('Finished processing');
     })
     .save(outputFilePath);
+
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy hàm tăng speed Audio...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
 }
 
 // Tạo thumbnail cho video
@@ -557,6 +585,14 @@ async function addTextToImage_thumnail(inputImagePath, outputImagePath, text, op
   } catch (error) {
     console.error('Error adding text to image:', error);
   }
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy hàm Tạo thumbnail...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
 }
 
 async function addTextToImage(inputImagePath, outputImagePath, text, options) {
@@ -600,10 +636,18 @@ async function addTextToImage(inputImagePath, outputImagePath, text, options) {
   } catch (error) {
     console.error('Error adding text to image:', error);
   }
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy hàm Add text to image...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
 }
 
 //ffmpeg add text to image
-async function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, text, fontSize, fontColor ,x,y) {
+function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, text, fontSize, fontColor ,x,y) {
     const ffmpegCommand = `ffmpeg -i "${inputImagePath}" -vf "drawtext=text='${text}':fontfile='${fontPath}':fontcolor=${fontColor}:fontsize=${fontSize}:x=${x}:y=${y}" "${outputImagePath}"`;
 
     exec(ffmpegCommand, (error, stdout, stderr) => {
@@ -618,10 +662,19 @@ async function ffmpeg_addTextToImage(inputImagePath, outputImagePath, fontPath, 
         console.log(`Stdout: ${stdout}`);
         console.log('Image processed successfully!');
     });
+
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy Add Text...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
 }
 
 // add watermask to video
-async function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVideoPath, options) {
+function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVideoPath, options) {
   const defaultOptions = {
     x: '(main_w-overlay_w)/2', // Vị trí X của watermark (ở giữa theo chiều ngang)
     y: '(main_h-overlay_h)/2', // Vị trí Y của watermark (ở giữa theo chiều dọc)
@@ -650,10 +703,18 @@ async function addWatermarkToVideo(inputVideoPath, watermarkImagePath, outputVid
       console.error('Lỗi khi chạy FFmpeg:', err.message);
     })
     .run();
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy hàm add watermark...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
 }
 
 // Ghép audio and video
-async function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFilePath) {
+function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFilePath) {
   // Lệnh ffmpeg để lấy độ dài của audio
   const getAudioDurationCommand = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${inputAudioPath}`;
 
@@ -694,6 +755,15 @@ async function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFile
       });
     });
   });
+    return new Promise((resolve, reject) => {
+        console.log("Đang chạy hàm ghép Audio và Video...");
+        setTimeout(() => {
+            console.log("Hàm đầu tiên hoàn thành!");
+            resolve();
+        }, 1000);
+    });
+
+
 }
 
 // ghep 2 video
@@ -779,7 +849,7 @@ async function mergeVideos(video1, video2, output, tempDir, title, channel,discr
 }
 
 // xóa toàn bộ file trong thư mục
-async function removeAllFilesSync(directory) {
+function removeAllFilesSync(directory) {
         const files = fs.readdirSync(directory);
         
         for (const file of files) {
@@ -789,7 +859,7 @@ async function removeAllFilesSync(directory) {
     }
 
 // Lấy random dòng trong file
-async function getRandomLine(filename){
+function getRandomLine(filename){
    var data = fs.readFileSync(filename, "utf8");
    var lines = data.split('\n');
    return lines[Math.floor(Math.random()*lines.length)];
@@ -800,7 +870,7 @@ async function getRandomLine(filename){
 
 
 // Function to download the file
-async function downloadFile_update(fileUrl_update, dest) {
+function downloadFile_update(fileUrl_update, dest) {
     const file = fs.createWriteStream(dest);
 
     https.get(fileUrl_update, (response) => {
