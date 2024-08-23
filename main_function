@@ -520,7 +520,7 @@ async function addTextToImage_thumnail(inputImagePath, outputImagePath, text, op
   try {
     // Load the image
     const image = await Jimp.read(inputImagePath);
-
+    text = text.replace("_","-")
     // Load the font
     const font = await Jimp.loadFont(fontstyle);
 
