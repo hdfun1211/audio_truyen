@@ -497,17 +497,13 @@ exec(ffmpegCommand, (error, stdout, stderr) => {
 // tăng tốc độ file audio
 //ffmpeg -i that-tich-khong-mua_1_0.mp3 -filter_complex "[0:a]atempo=1.4,asetrate=44100*0.6,aresample=44100,bass=g=30,treble=g=10,volume=2.5,highpass=f=100" output.mp3
 //ffmpeg -i that-tich-khong-mua_1_0.mp3 -filter_complex "atempo=1.4,asetrate=44100*0.58,loudnorm=I=-16:LRA=11:TP=-1.5,equalizer=f=100:t=h:width_type=h:width=200:g=5,equalizer=f=3000:t=h:width_type=h:width=2000:g=3,highpass=f=60,lowpass=f=15000,compand=attacks=0:points=-90/-900|-70/-70|-60/-40|-20/-20|0/0" -ar 44100 -ac 2 -b:a 192k output.mp3
-
+//ffmpeg -i choc-tuc-vo-yeu-mua-mot-tang-mot-150520_111_0.mp3 -filter_complex "atempo=1.2,asetrate=44100*0.58,loudnorm=I=-16:LRA=11:TP=-1.5,equalizer=f=100:t=h:width_type=h:width=200:g=5,equalizer=f=3000:t=h:width_type=h:width=2000:g=3,highpass=f=60,lowpass=f=15000,compand=attacks=0:points=-90/-900|-70/-70|-60/-40|-20/-20|0/0" -ar 44100 -ac 2 -b:a 192k output.mp3
 function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
   ffmpeg(inputFilePath)
     .audioFilters([
-    'atempo=1.35',                          // Tăng tốc độ phát lên 1.4 lần
-    'asetrate=44100*0.57',                  // Điều chỉnh tốc độ của tần số mẫu
+    'atempo=1.2',                          // Tăng tốc độ phát lên 1.4 lần
+    'asetrate=44100*0.58',                  // Điều chỉnh tốc độ của tần số mẫu
     'aresample=44100',                     // Đặt lại tần số mẫu về 44100 Hz
-    'bass=g=45',                           // Tăng độ trầm (bass) lên 30 dB
-    'treble=g=10',                         // Tăng độ bổng (treble) lên 10 dB
-    'volume=2.0',                          // Tăng âm lượng lên 2.5 lần
-    'highpass=f=250',                       // Tăng độ trong bằng cách lọc tần số thấp (highpass filter)
 	'loudnorm=I=-16:LRA=11:TP=-1.5',
 	'equalizer=f=100:t=h:width_type=h:width=200:g=5',
 	'equalizer=f=3000:t=h:width_type=h:width=2000:g=3',
