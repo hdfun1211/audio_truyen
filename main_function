@@ -7,6 +7,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const Jimp = require('jimp');
 const { exec } = require('child_process');
 const https = require('https');
+const OpenAI = require('openai');
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => {
@@ -14,7 +15,113 @@ const sleep = (milliseconds) => {
     setTimeout(resolve, milliseconds)})
 }
 
-// Google Text to speech
+//Open AI text to speech
+async function openai_tts(key, bodytext, id_truyen, sotap, part, sotapghep, charactor) {
+
+	const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
+	const outputLocationPath = path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotap+"_"+part+".mp3");
+	if (!fs.existsSync(folderPath_sotap)) {
+	  try {
+		fs.mkdirSync(folderPath_sotap);
+		console.log('Directory created successfully');
+	  } catch (err) {
+		console.error(`Failed to create directory: ${err.message}`);
+	  }
+	} else {
+	  console.log('Directory already exists');
+	}
+
+
+	// Thay 'your-api-key' bằng API key thực tế của bạn
+	const openai = new OpenAI({
+	  apiKey: key,
+	});
+	const speechFile = outputLocationPath;
+  const mp3 = await openai.audio.speech.create({
+    model: "tts-1",
+    voice: charactor,
+    input: bodytext,
+    //speed: "1.1",
+  });
+  console.log(speechFile);
+  const buffer = Buffer.from(await mp3.arrayBuffer());
+  await fs.promises.writeFile(speechFile, buffer);
+  
+// Kiểm tra sự tồn tại của tên file trong audiolist
+	filePath_audiolist="./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt'
+	const data_audiolist = fs.readFileSync(filePath_audiolist, 'utf8');
+	// Kiểm tra sự tồn tại của chuỗi
+	searchString = outputLocationPath
+	if (data_audiolist.includes(searchString)) {
+	  console.log(`Chuỗi "${searchString}" đã có trong file.`);
+	} else {
+	  console.log(`Chuỗi "${searchString}" không có trong file.`);
+	// ghi file vào Listaudio
+	fs.appendFile("./temp/"+id_truyen+"_"+sotapghep+"/"+'audiolist.txt', "file '"+outputLocationPath+"'\n", function (err) {
+	  if (err) throw err;
+	  console.log('Updated!');
+	});						
+  }		
+console.log("Text to speech converted!");
+  
+}
+
+// Google text to speech API
+async function synthesizeSpeech(key_google, bodytext, id_truyen, sotap, part, sotapghep, charactor) {
+	// tạo thư mục
+	const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
+	const outputLocationPath = path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", id_truyen+"_"+sotap+"_"+part+".mp3");
+	console.log(outputLocationPath)
+	if (!fs.existsSync(folderPath_sotap)) {
+	  try {
+		fs.mkdirSync(folderPath_sotap);
+		console.log('Directory created successfully');
+	  } catch (err) {
+		console.error(`Failed to create directory: ${err.message}`);
+	  }
+	} else {
+	  console.log('Directory already exists');
+	}
+  const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${key_google}`;	
+  try {
+    // Request body
+    const requestBody = {
+      input: { text: bodytext },
+	  //NEUTRAL
+      voice: { languageCode: 'vi-VN', name: 'vi-VN-Standard-C', ssmlGender: 'FEMALE' },
+      audioConfig: { audioEncoding: 'MP3' },
+    };
+
+    // Perform the API request
+    const response = await axios.post(url, requestBody);
+    const audioContent = response.data.audioContent;
+
+    // Write audio content to MP3 file
+    fs.writeFileSync(outputLocationPath, Buffer.from(audioContent, 'base64'));
+    console.log(`Audio content written to file: ${outputLocationPath}`);
+  // Kiểm tra sự tồn tại của tên file trong audiolist
+	filePath_audiolist=path.resolve(__dirname+"/temp/"+id_truyen+"_"+sotapghep+"/", 'audiolist.txt');
+	const data_audiolist = fs.readFileSync(filePath_audiolist, 'utf8');
+	// Kiểm tra sự tồn tại của chuỗi
+	searchString = outputLocationPath
+	if (data_audiolist.includes(searchString)) {
+	  console.log(`Chuỗi "${searchString}" đã có trong file.`);
+	} else {
+	  console.log(`Chuỗi "${searchString}" không có trong file.`);
+	// ghi file vào Listaudio
+	fs.appendFile(filePath_audiolist, "file '"+outputLocationPath+"'\n", function (err) {
+	  if (err) throw err;
+	  console.log('Updated!');
+	});						
+	}	
+  
+  
+  } catch (error) {
+    console.error('Error making API request:', error);
+  }
+}
+
+// Google Text to speech free
 function google_tts(bodytext,id_truyen,sotap,part,sotapghep)
 {
 const folderPath_sotap = path.join(__dirname+"/temp/", id_truyen+"_"+sotapghep);
@@ -501,7 +608,7 @@ exec(ffmpegCommand, (error, stdout, stderr) => {
 function increaseAudioSpeed(inputFilePath, outputFilePath, speed) {
   ffmpeg(inputFilePath)
     .audioFilters([
-    'atempo=1.2',                          // Tăng tốc độ phát lên 1.4 lần
+    'atempo='+speed,                          // Tăng tốc độ phát lên 1.4 lần
     'asetrate=44100*0.58',                  // Điều chỉnh tốc độ của tần số mẫu
     'aresample=44100',                     // Đặt lại tần số mẫu về 44100 Hz
 	'loudnorm=I=-16:LRA=11:TP=-1.5',
@@ -906,6 +1013,8 @@ module.exports = {
 	removeAllFilesSync,
 	getRandomLine,
 	downloadFile_update,
-	google_tts
+	google_tts,
+	openai_tts,
+	synthesizeSpeech
 
 };
