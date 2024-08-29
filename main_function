@@ -995,6 +995,80 @@ function downloadFile_update(fileUrl_update, dest) {
     });
 }
 
+// Xóa bỏ các ký tự đặc biệt trong chuỗi
+function removeSpecialCharacters(text) {
+// loại bỏ những ký tự xuống dòng mà kết thúc không phải dấu \n .
+	let lines_n = text.replaceAll('\n'," ");
+	lines_r = lines_n.replaceAll('\r'," ");
+	//console.log ("Loại bỏ ký tự xuống dòng: \n"+lines_r)
+	// loại bỏ dấu "" và các ký tự [1]
+	regex = /[“”]|\[\d+\]/g;
+	lines_r = lines_r.replace(regex, '');
+	//console.log ("loại bỏ dấu "+" và các ký tự [1]: \n"+lines_r)
+	// Hai khoảng trắng liền nhau thành 1 khoảng trắng
+	lines_r = lines_r.replace('  ', ' ');
+	//console.log ("Hai khoảng trắm liền nhau sẽ bị xóa bỏ một: \n"+lines_r)
+	// Loại bỏ các đường link trong văn bản
+	regex = /https:\/\/[^\s]+/g;
+	lines_r = lines_r.replace(regex, ' ');
+	// loại bỏ dấu ngoặc đơn ()
+	lines_r = lines_r.replace(/\(.*?\)/g, '').trim();
+	//console.log ("Loại bỏ các đường liên kết: \n"+lines_r)
+	// Đặt các câu có chứa dấu ! và ? vào một hàng riêng
+	const sentences = lines_r.split(/(?<=[!?])\s*/);
+	// Tạo mảng để chứa các câu đã xử lý
+	const resultSentences = [];
+
+	// Duyệt qua từng câu để kiểm tra dấu câu và đưa vào mảng kết quả
+	sentences.forEach((sentence, index) => {
+		// Loại bỏ khoảng trắng thừa ở đầu và cuối câu
+		sentence = sentence.trim();
+		
+		if (/[!?]/.test(sentence)) {
+			// Nếu câu chứa dấu ! hoặc ?, thêm vào mảng kết quả với dấu xuống dòng sau mỗi câu
+			resultSentences.push(sentence);
+			// Thêm một dòng trống sau câu chứa dấu ! hoặc ? nếu không phải là câu cuối trong văn bản
+			if (index < sentences.length - 1) {
+				resultSentences.push('');
+			}
+		} else {
+			// Nếu không chứa dấu ! hoặc ?, thêm vào mảng kết quả mà không thêm dòng trống
+			resultSentences.push(sentence);
+		}
+	});
+
+	// Kết hợp các câu thành một chuỗi văn bản mới, loại bỏ dòng trống thừa
+	const str_story = resultSentences.join('\n').trim();							
+
+	cleanedHTML = welcome + "\n" + str_story+ "\n" +outro;
+	cleanedHTML = cleanedHTML.replaceAll(".",". ")
+	cleanedHTML = cleanedHTML.replaceAll("...","... ")
+	cleanedHTML = cleanedHTML.replaceAll('"',"")
+	cleanedHTML = cleanedHTML.replaceAll('@',"")
+	cleanedHTML = cleanedHTML.replaceAll('#',"")
+	cleanedHTML = cleanedHTML.replaceAll('&',"")
+	cleanedHTML = cleanedHTML.replaceAll('*',"")
+	cleanedHTML = cleanedHTML.replaceAll('^',"")
+	cleanedHTML = cleanedHTML.replaceAll('_',"")
+	cleanedHTML = cleanedHTML.replaceAll('-',"")
+	cleanedHTML = cleanedHTML.replaceAll('(',"")
+	cleanedHTML = cleanedHTML.replaceAll(')',"")
+	cleanedHTML = cleanedHTML.replaceAll('[',"")
+	cleanedHTML = cleanedHTML.replaceAll(']',"")
+	cleanedHTML = cleanedHTML.replaceAll('{',"")
+	cleanedHTML = cleanedHTML.replaceAll('}',"")
+	cleanedHTML = cleanedHTML.replaceAll("'","")
+	cleanedHTML = cleanedHTML.replaceAll("/","")
+	cleanedHTML = cleanedHTML.replaceAll("\\","")
+	cleanedHTML = cleanedHTML.replaceAll(";","")
+	cleanedHTML = cleanedHTML.replaceAll(">","")
+	cleanedHTML = cleanedHTML.replaceAll("<","")
+	cleanedHTML = cleanedHTML.replaceAll("~","")
+	cleanedHTML = cleanedHTML.replaceAll("`","")
+	cleanedHTML = cleanedHTML.replaceAll("|","")
+	return cleanedHTML
+}
+
 
 // Export the functions
 module.exports = {
@@ -1015,6 +1089,7 @@ module.exports = {
 	downloadFile_update,
 	google_tts,
 	openai_tts,
-	synthesizeSpeech
+	synthesizeSpeech,
+	removeSpecialCharacters
 
 };
