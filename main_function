@@ -1066,6 +1066,7 @@ function removeSpecialCharacters(text) {
 	cleanedHTML = cleanedHTML.replaceAll("~","")
 	cleanedHTML = cleanedHTML.replaceAll("`","")
 	cleanedHTML = cleanedHTML.replaceAll("|","")
+cleanedHTML = cleanedHTML.replaceAll("=","")
 	return cleanedHTML
 }
 
