@@ -1068,8 +1068,11 @@ function removeSpecialCharacters(text) {
 	cleanedHTML = cleanedHTML.replaceAll("|","")
 	cleanedHTML = cleanedHTML.replaceAll("=","")
 	cleanedHTML = cleanedHTML.replaceAll("c.h.ế.t","chết")
+	cleanedHTML = cleanedHTML.replaceAll("c. h. ế. t","chết")
 	cleanedHTML = cleanedHTML.replaceAll("t.h.i","thi")
+	cleanedHTML = cleanedHTML.replaceAll("t. h. i","thi")
 	cleanedHTML = cleanedHTML.replaceAll("t.h.ể","thể")
+	cleanedHTML = cleanedHTML.replaceAll("t. h. ể","thể")
 	return cleanedHTML
 }
 
