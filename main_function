@@ -842,7 +842,7 @@ function repeatVideoAndAddAudio(inputVideoPath, inputAudioPath, outputFilePath) 
       const loopCount = Math.ceil(audioDuration / videoDuration);
 
       // Lệnh ffmpeg để ghép audio vào video và lặp lại video
-      const ffmpegCommand = `ffmpeg -stream_loop ${loopCount - 1} -i ${inputVideoPath} -i ${inputAudioPath} -map 0:v:0 -map 1:a:0 -shortest -c copy -preset fast -tune zerolatency -b:v 5M ${outputFilePath}`;
+      const ffmpegCommand = `ffmpeg -stream_loop -1 -i ${inputVideoPath} -i ${inputAudioPath}  -shortest -shortest -map 0:v:0 -map 1:a:0 -preset ultrafast -tune zerolatency -b:v 5M ${outputFilePath}`;
 
       exec(ffmpegCommand, (error, stdout, stderr) => {
         if (error) {
