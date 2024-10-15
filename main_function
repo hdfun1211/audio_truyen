@@ -1074,6 +1074,7 @@ function removeSpecialCharacters(text) {
 	cleanedHTML = cleanedHTML.replaceAll("t.h.ể","thể")
 	cleanedHTML = cleanedHTML.replaceAll("t. h. ể","thể")
 	cleanedHTML = cleanedHTML.replaceAll("4o mini","")
+	cleanedHTML = cleanedHTML.replaceAll("gi.ết","giết")
 	return cleanedHTML
 }
 
